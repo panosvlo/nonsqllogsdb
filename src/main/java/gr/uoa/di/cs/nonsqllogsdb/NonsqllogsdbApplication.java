@@ -1,4 +1,4 @@
-package Server.Log.Management.System;
+package gr.uoa.di.cs.nonsqllogsdb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
