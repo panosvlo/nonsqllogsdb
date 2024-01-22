@@ -1,5 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.controller;
 
+import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount; // Correct import
 import gr.uoa.di.cs.nonsqllogsdb.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,21 @@ public class LogController {
             return ResponseEntity.ok(logCounts);
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(null); // or any other error handling
+        }
+    }
+    @GetMapping("/countDailyByTypeName")
+    public ResponseEntity<List<DailyLogCount>> getCountOfDailyLogsByTypeName(
+            @RequestParam("typeName") String typeName,
+            @RequestParam("start") String startStr,
+            @RequestParam("end") String endStr) {
+
+        try {
+            Date start = dateFormat.parse(startStr);
+            Date end = dateFormat.parse(endStr);
+            List<DailyLogCount> dailyCounts = logService.countDailyLogsByTypeName(typeName, start, end);
+            return ResponseEntity.ok(dailyCounts);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 }

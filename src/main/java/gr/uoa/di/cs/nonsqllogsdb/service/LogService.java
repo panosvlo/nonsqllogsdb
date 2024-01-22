@@ -1,5 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.service;
 
+import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount; // Correct import
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,9 @@ public class LogService {
 
     public List<LogCount> countLogsByTypeInDateRange(Date start, Date end) { // Updated return type
         return logRepository.countLogsByTypeAndTimestampBetween(start, end);
+    }
+
+    public List<DailyLogCount> countDailyLogsByTypeName(String typeName, Date start, Date end) {
+        return logRepository.countDailyLogsByTypeName(typeName, start, end);
     }
 }
