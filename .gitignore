@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+/dbinit/access_log_full
+/dbinit/HDFS_DataXceiver.log.short
+/dbinit/HDFS_FS_Namesystem.log.short

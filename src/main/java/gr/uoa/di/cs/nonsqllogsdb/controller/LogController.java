@@ -2,6 +2,7 @@ package gr.uoa.di.cs.nonsqllogsdb.controller;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
+import gr.uoa.di.cs.nonsqllogsdb.dto.HttpMethodCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount; // Correct import
 import gr.uoa.di.cs.nonsqllogsdb.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,20 @@ public class LogController {
             Date dayEnd = new Date(dayStart.getTime() + 86400000); // Add one day in milliseconds
             List<CommonLogCount> commonLogCounts = logService.findTopCommonLogsBySourceIp(dayStart, dayEnd);
             return ResponseEntity.ok(commonLogCounts);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    @GetMapping("/leastCommonHttpMethods")
+    public ResponseEntity<List<HttpMethodCount>> getLeastCommonHttpMethods(
+            @RequestParam("start") String startStr,
+            @RequestParam("end") String endStr) {
+
+        try {
+            Date start = dateFormat.parse(startStr);
+            Date end = dateFormat.parse(endStr);
+            List<HttpMethodCount> httpMethodCounts = logService.findLeastCommonHttpMethods(start, end);
+            return ResponseEntity.ok(httpMethodCounts);
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);
         }

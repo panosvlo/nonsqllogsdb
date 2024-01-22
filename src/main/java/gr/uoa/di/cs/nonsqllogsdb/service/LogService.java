@@ -2,6 +2,7 @@ package gr.uoa.di.cs.nonsqllogsdb.service;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
+import gr.uoa.di.cs.nonsqllogsdb.dto.HttpMethodCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount; // Correct import
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,8 @@ public class LogService {
     }
     public List<CommonLogCount> findTopCommonLogsBySourceIp(Date dayStart, Date dayEnd) {
         return logRepository.findTopCommonLogsBySourceIp(dayStart, dayEnd);
+    }
+    public List<HttpMethodCount> findLeastCommonHttpMethods(Date start, Date end) {
+        return logRepository.findLeastCommonHttpMethods(start, end);
     }
 }

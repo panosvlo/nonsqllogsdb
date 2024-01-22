@@ -2,6 +2,7 @@ package gr.uoa.di.cs.nonsqllogsdb.repository;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
+import gr.uoa.di.cs.nonsqllogsdb.dto.HttpMethodCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -44,4 +45,14 @@ public interface LogRepository extends MongoRepository<Log, String> {
             "{ $limit: 3 }"
     })
     List<CommonLogCount> findTopCommonLogsBySourceIp(Date dayStart, Date dayEnd);
+    @Aggregation(pipeline = {
+            "{ $match: { timestamp: { $gte: ?0, $lte: ?1 } } }",
+            "{ $unwind: '$details' }",
+            "{ $match: { 'details.key': 'method' } }",
+            "{ $group: { _id: '$details.value', count: { $sum: 1 } } }",
+            "{ $sort: { count: 1 } }",
+            "{ $project: { method: '$_id', count: 1, _id: 0 } }",
+            "{ $limit: 2 }"
+    })
+    List<HttpMethodCount> findLeastCommonHttpMethods(Date start, Date end);
 }
