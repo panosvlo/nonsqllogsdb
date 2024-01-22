@@ -1,5 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.repository;
 
+import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
@@ -34,4 +35,13 @@ public interface LogRepository extends MongoRepository<Log, String> {
             "{ $sort: { day: 1 } }"
     })
     List<DailyLogCount> countDailyLogsByTypeName(String typeName, Date start, Date end);
+
+    @Aggregation(pipeline = {
+            "{ $match: { timestamp: { $gte: ?0, $lte: ?1 } } }",
+            "{ $group: { _id: '$source_ip', count: { $sum: 1 } } }",
+            "{ $sort: { count: -1 } }",
+            "{ $project: { sourceIp: '$_id', count: 1, _id: 0 } }",
+            "{ $limit: 3 }"
+    })
+    List<CommonLogCount> findTopCommonLogsBySourceIp(Date dayStart, Date dayEnd);
 }

@@ -1,6 +1,7 @@
 package gr.uoa.di.cs.nonsqllogsdb.service;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
+import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount; // Correct import
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,8 @@ public class LogService {
 
     public List<DailyLogCount> countDailyLogsByTypeName(String typeName, Date start, Date end) {
         return logRepository.countDailyLogsByTypeName(typeName, start, end);
+    }
+    public List<CommonLogCount> findTopCommonLogsBySourceIp(Date dayStart, Date dayEnd) {
+        return logRepository.findTopCommonLogsBySourceIp(dayStart, dayEnd);
     }
 }

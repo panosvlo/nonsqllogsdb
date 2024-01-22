@@ -1,5 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.controller;
 
+import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
 import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount; // Correct import
 import gr.uoa.di.cs.nonsqllogsdb.service.LogService;
@@ -52,6 +53,20 @@ public class LogController {
             Date end = dateFormat.parse(endStr);
             List<DailyLogCount> dailyCounts = logService.countDailyLogsByTypeName(typeName, start, end);
             return ResponseEntity.ok(dailyCounts);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/topCommonBySourceIp")
+    public ResponseEntity<List<CommonLogCount>> getTopCommonLogsBySourceIp(
+            @RequestParam("day") String dayStr) {
+
+        try {
+            Date dayStart = dateFormat.parse(dayStr);
+            Date dayEnd = new Date(dayStart.getTime() + 86400000); // Add one day in milliseconds
+            List<CommonLogCount> commonLogCounts = logService.findTopCommonLogsBySourceIp(dayStart, dayEnd);
+            return ResponseEntity.ok(commonLogCounts);
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);
         }
