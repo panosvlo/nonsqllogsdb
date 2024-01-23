@@ -1,9 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.repository;
 
-import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
-import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
-import gr.uoa.di.cs.nonsqllogsdb.dto.HttpMethodCount;
-import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount;
+import gr.uoa.di.cs.nonsqllogsdb.dto.*;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -55,4 +52,13 @@ public interface LogRepository extends MongoRepository<Log, String> {
             "{ $limit: 2 }"
     })
     List<HttpMethodCount> findLeastCommonHttpMethods(Date start, Date end);
+    @Aggregation(pipeline = {
+            "{ $project: { referer: { $filter: { input: '$details', as: 'detail', cond: { $eq: ['$$detail.key', 'referer'] } } }, resources: { $filter: { input: '$details', as: 'detail', cond: { $eq: ['$$detail.key', 'resource'] } } } } }",
+            "{ $unwind: '$referer' }",
+            "{ $unwind: '$resources' }",
+            "{ $group: { _id: '$referer.value', resources: { $addToSet: '$resources.value' } } }",
+            "{ $match: { resources: { $not: { $size: 1 } } } }",
+            "{ $project: { referer: '$_id', resources: 1, _id: 0 } }"
+    })
+    List<RefererResourceCount> findReferersWithMultipleResources();
 }

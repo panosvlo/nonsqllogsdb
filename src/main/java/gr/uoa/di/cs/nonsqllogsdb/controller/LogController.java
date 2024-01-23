@@ -1,9 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.controller;
 
-import gr.uoa.di.cs.nonsqllogsdb.dto.CommonLogCount;
-import gr.uoa.di.cs.nonsqllogsdb.dto.DailyLogCount;
-import gr.uoa.di.cs.nonsqllogsdb.dto.HttpMethodCount;
-import gr.uoa.di.cs.nonsqllogsdb.dto.LogCount; // Correct import
+import gr.uoa.di.cs.nonsqllogsdb.dto.*;
 import gr.uoa.di.cs.nonsqllogsdb.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -85,5 +82,10 @@ public class LogController {
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+    @GetMapping("/referersWithMultipleResources")
+    public ResponseEntity<List<RefererResourceCount>> getReferersWithMultipleResources() {
+        List<RefererResourceCount> refererResourceCounts = logService.findReferersWithMultipleResources();
+        return ResponseEntity.ok(refererResourceCounts);
     }
 }
