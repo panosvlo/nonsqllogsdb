@@ -74,22 +74,37 @@ public interface LogRepository extends MongoRepository<Log, String> {
     void extractReplicatedBlocks();
 
     @Aggregation(pipeline = {
-            // Extract created blocks with timestamp
-            "{ $match: { 'details.key': 'operation', 'details.value': 'NameSystem.allocateBlock' } }",
+            "{ $unwind: '$details' }",
+            "{ $match: { 'details.value': { $regex: 'is added to' } } }",
+            "{ $project: { blockId: { $regexFind: { input: '$details.value', regex: 'blk_[-\\\\d]+' } }, timestamp: 1, _id: 0 } }",
+            "{ $project: { blockId: '$blockId.match', timestamp: 1, _id: 0 } }"
+    })
+    List<BlockReplication> findBlockReplications();
+
+    @Aggregation(pipeline = {
+            "{ $match: { 'details': { $elemMatch: { 'key': 'operation', 'value': 'NameSystem.allocateBlock' } } } }",
             "{ $unwind: '$details' }",
             "{ $match: { 'details.key': 'block_id' } }",
-            "{ $project: { blockId: '$details.value', createdTimestamp: '$timestamp', _id: 0 } }",
-
-            // Join with replicated blocks
-            "{ $lookup: { from: 'tempReplicatedBlocks', localField: 'blockId', foreignField: 'blockId', as: 'replicatedInfo' } }",
-            "{ $unwind: '$replicatedInfo' }",
-
-            // Select only those replicated on the same day
-            "{ $match: { $expr: { $eq: [ { $dateToString: { format: '%Y-%m-%d', date: '$createdTimestamp' } }, { $dateToString: { format: '%Y-%m-%d', date: '$replicatedInfo.replicatedTimestamp' } } ] } } }",
-            "{ $project: { blockId: 1, operationDates: [ '$createdTimestamp', '$replicatedInfo.replicatedTimestamp' ], _id: 0 } }",
-
-            // Clean up temporary collection
-            "{ $out: 'finalResult' }"
+            "{ $project: { _id: 0, blockId: '$details.value', timestamp: 1 } }"
     })
-    List<BlockOperation> findBlocksReplicatedAndServedSameDay();
+    List<BlockCreation> findBlockCreations();
+
+    @Aggregation(pipeline = {
+            // Match block creation operations
+            "{ $match: { 'details': { $elemMatch: { 'key': 'operation', 'value': 'NameSystem.allocateBlock' } } } }",
+            "{ $unwind: '$details' }",
+            "{ $match: { 'details.key': 'block_id' } }",
+            "{ $project: { blockId: '$details.value', creationDate: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } } } }",
+            // Join with block replications
+            "{ $lookup: { from: 'logs', localField: 'blockId', foreignField: 'details.value', as: 'replications' } }",
+            "{ $unwind: '$replications' }",
+            "{ $match: { 'replications.details.value': { $regex: 'is added to' } } }",
+            "{ $project: { blockId: 1, creationDate: 1, replicationDate: { $dateToString: { format: '%Y-%m-%d', date: '$replications.timestamp' } } } }",
+            // Match where creation and replication dates are the same
+            "{ $match: { $expr: { $eq: ['$creationDate', '$replicationDate'] } } }",
+            "{ $group: { _id: '$blockId', operationDates: { $addToSet: '$creationDate' } } }",
+            "{ $project: { blockId: '$_id', operationDates: 1, _id: 0 } }"
+    })
+    List<BlockOperation> findBlocksReplicatedSameDayAsCreated();
+
 }

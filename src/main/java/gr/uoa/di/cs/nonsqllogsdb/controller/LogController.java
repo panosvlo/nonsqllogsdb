@@ -89,9 +89,23 @@ public class LogController {
         return ResponseEntity.ok(refererResourceCounts);
     }
 
-    @GetMapping("/blocksReplicatedServedSameDay")
-    public ResponseEntity<List<BlockOperation>> getBlocksReplicatedAndServedSameDay() {
-        List<BlockOperation> blockOperations = logService.getBlocksReplicatedAndServedSameDay();
-        return ResponseEntity.ok(blockOperations);
+
+
+    @GetMapping("/replicatedSameDay")
+    public ResponseEntity<List<BlockOperation>> getBlocksReplicatedSameDay() {
+        List<BlockOperation> blocks = logService.findBlocksReplicatedSameDayAsCreated();
+        return ResponseEntity.ok(blocks);
+    }
+
+    @GetMapping("/blockReplications")
+    public ResponseEntity<List<BlockReplication>> getBlockReplications() {
+        List<BlockReplication> blockReplications = logService.findBlockReplications();
+        return ResponseEntity.ok(blockReplications);
+    }
+
+    @GetMapping("/blockCreations")
+    public ResponseEntity<List<BlockCreation>> getBlockCreations() {
+        List<BlockCreation> blockCreations = logService.findBlockCreations();
+        return ResponseEntity.ok(blockCreations);
     }
 }
