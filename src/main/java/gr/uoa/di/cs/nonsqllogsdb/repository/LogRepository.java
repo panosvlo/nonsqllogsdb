@@ -61,4 +61,35 @@ public interface LogRepository extends MongoRepository<Log, String> {
             "{ $project: { referer: '$_id', resources: 1, _id: 0 } }"
     })
     List<RefererResourceCount> findReferersWithMultipleResources();
+    @Aggregation(pipeline = {
+            // Extract replicated blocks with timestamp
+            "{ $unwind: '$details' }",
+            "{ $match: { 'details.value': { $regex: 'is added to' } } }",
+            "{ $project: { blockId: { $regexFind: { input: '$details.value', regex: 'blk_[-\\d]+' } }, replicatedTimestamp: '$timestamp', _id: 0 } }",
+            "{ $project: { blockId: '$blockId.match', replicatedTimestamp: 1 } }",
+
+            // Store the result in a temporary collection
+            "{ $out: 'tempReplicatedBlocks' }"
+    })
+    void extractReplicatedBlocks();
+
+    @Aggregation(pipeline = {
+            // Extract created blocks with timestamp
+            "{ $match: { 'details.key': 'operation', 'details.value': 'NameSystem.allocateBlock' } }",
+            "{ $unwind: '$details' }",
+            "{ $match: { 'details.key': 'block_id' } }",
+            "{ $project: { blockId: '$details.value', createdTimestamp: '$timestamp', _id: 0 } }",
+
+            // Join with replicated blocks
+            "{ $lookup: { from: 'tempReplicatedBlocks', localField: 'blockId', foreignField: 'blockId', as: 'replicatedInfo' } }",
+            "{ $unwind: '$replicatedInfo' }",
+
+            // Select only those replicated on the same day
+            "{ $match: { $expr: { $eq: [ { $dateToString: { format: '%Y-%m-%d', date: '$createdTimestamp' } }, { $dateToString: { format: '%Y-%m-%d', date: '$replicatedInfo.replicatedTimestamp' } } ] } } }",
+            "{ $project: { blockId: 1, operationDates: [ '$createdTimestamp', '$replicatedInfo.replicatedTimestamp' ], _id: 0 } }",
+
+            // Clean up temporary collection
+            "{ $out: 'finalResult' }"
+    })
+    List<BlockOperation> findBlocksReplicatedAndServedSameDay();
 }

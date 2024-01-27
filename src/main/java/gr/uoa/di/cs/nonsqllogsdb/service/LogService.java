@@ -34,4 +34,8 @@ public class LogService {
     public List<RefererResourceCount> findReferersWithMultipleResources() {
         return logRepository.findReferersWithMultipleResources();
     }
+
+    public List<BlockOperation> getBlocksReplicatedAndServedSameDay() {
+        return logRepository.findBlocksReplicatedAndServedSameDay();
+    }
 }

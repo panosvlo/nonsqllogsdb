@@ -88,4 +88,10 @@ public class LogController {
         List<RefererResourceCount> refererResourceCounts = logService.findReferersWithMultipleResources();
         return ResponseEntity.ok(refererResourceCounts);
     }
+
+    @GetMapping("/blocksReplicatedServedSameDay")
+    public ResponseEntity<List<BlockOperation>> getBlocksReplicatedAndServedSameDay() {
+        List<BlockOperation> blockOperations = logService.getBlocksReplicatedAndServedSameDay();
+        return ResponseEntity.ok(blockOperations);
+    }
 }
