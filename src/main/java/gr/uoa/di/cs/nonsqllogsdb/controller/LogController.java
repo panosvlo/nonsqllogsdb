@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/logs")
@@ -92,10 +93,11 @@ public class LogController {
 
 
     @GetMapping("/replicatedSameDay")
-    public ResponseEntity<List<BlockOperation>> getBlocksReplicatedSameDay() {
-        List<BlockOperation> blocks = logService.findBlocksReplicatedSameDayAsCreated();
+    public ResponseEntity<Map<String, Integer>> getBlocksReplicatedSameDay() {
+        Map<String, Integer> blocks = logService.findBlocksReplicatedSameDayAsCreated();
         return ResponseEntity.ok(blocks);
     }
+
 
     @GetMapping("/blockReplications")
     public ResponseEntity<List<BlockReplication>> getBlockReplications() {

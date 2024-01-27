@@ -41,14 +41,14 @@ public class LogService {
     public List<RefererResourceCount> findReferersWithMultipleResources() {
         return logRepository.findReferersWithMultipleResources();
     }
-    public List<BlockOperation> findBlocksReplicatedSameDayAsCreated() {
+    public Map<String, Integer> findBlocksReplicatedSameDayAsCreated() {
         List<BlockCreation> blockCreations = logRepository.findBlockCreations();
         List<BlockReplication> blockReplications = logRepository.findBlockReplications();
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setTimeZone(TimeZone.getTimeZone("UTC")); // Ensure time zone consistency
         Map<String, Date> creationDates = new HashMap<>();
-        List<BlockOperation> replicatedSameDayBlocks = new ArrayList<>();
+        Map<String, Integer> replicatedSameDayBlocks = new HashMap<>();
 
         // Logging block creations
         for (BlockCreation creation : blockCreations) {
@@ -60,10 +60,8 @@ public class LogService {
             String blockId = extractNumericBlockId(replication.getBlockId());
             Date creationDate = creationDates.get(blockId);
 
-            if (creationDate != null) {
-                if (isSameDay(creationDate, replication.getTimestamp())) {
-                    replicatedSameDayBlocks.add(new BlockOperation(blockId, Arrays.asList(creationDate, replication.getTimestamp())));
-                }
+            if (creationDate != null && isSameDay(creationDate, replication.getTimestamp())) {
+                replicatedSameDayBlocks.put(blockId, replicatedSameDayBlocks.getOrDefault(blockId, 0) + 1);
             }
         }
 
