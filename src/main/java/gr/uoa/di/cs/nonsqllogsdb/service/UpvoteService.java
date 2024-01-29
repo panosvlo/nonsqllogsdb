@@ -1,5 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.service;
 
+import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
@@ -7,6 +8,8 @@ import gr.uoa.di.cs.nonsqllogsdb.repository.UpvoteRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UpvoteService {
@@ -24,5 +27,9 @@ public class UpvoteService {
         Log log = logRepository.findById(logId).orElseThrow(() -> new RuntimeException("Log not found"));
         log.setUpvoteCount(log.getUpvoteCount() + 1);
         logRepository.save(log);
+    }
+
+    public List<ActiveAdminDTO> getTopFiftyActiveAdministrators() {
+        return upvoteRepository.findTopFiftyActiveAdministrators();
     }
 }

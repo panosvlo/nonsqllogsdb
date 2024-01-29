@@ -137,4 +137,10 @@ public class LogController {
         List<LogUpvoteDTO> topUpvotedLogs = logService.findTop50UpvotedLogsByDate(day, dayEnd);
         return ResponseEntity.ok(topUpvotedLogs);
     }
+
+    @GetMapping("/topActiveAdmins")
+    public ResponseEntity<List<ActiveAdminDTO>> getTopActiveAdmins() {
+        List<ActiveAdminDTO> activeAdmins = upvoteService.getTopFiftyActiveAdministrators();
+        return ResponseEntity.ok(activeAdmins);
+    }
 }

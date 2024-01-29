@@ -55,6 +55,12 @@ const apis = [
           { name: 'day', type: 'date', placeholder: 'Day', value: '' },
         ]
     },
+	{
+        name: 'Query 8',
+        endpoint: '/api/logs/topActiveAdmins',
+        description: 'Find the fifty most active administrators, with regard to the total number of upvotes.',
+        params: [] // No parameters required for this API
+	},
     {
         name: 'Upvote Log',
         endpoint: '/api/logs/{logId}/upvote',
