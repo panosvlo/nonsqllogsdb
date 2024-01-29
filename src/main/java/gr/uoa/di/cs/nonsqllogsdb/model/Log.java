@@ -21,6 +21,8 @@ public class Log {
     private String destinationIp;
     private List<LogDetail> details;
 
+    private int upvoteCount = 0;
+
     // Constructors
     public Log() {
     }
@@ -80,5 +82,13 @@ public class Log {
 
     public void setDetails(List<LogDetail> details) {
         this.details = details;
+    }
+
+    public int getUpvoteCount() {
+        return upvoteCount;
+    }
+
+    public void setUpvoteCount(int upvoteCount) {
+        this.upvoteCount = upvoteCount;
     }
 }

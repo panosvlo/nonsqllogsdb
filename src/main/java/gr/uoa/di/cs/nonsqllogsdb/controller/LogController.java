@@ -1,13 +1,13 @@
 package gr.uoa.di.cs.nonsqllogsdb.controller;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.*;
+import gr.uoa.di.cs.nonsqllogsdb.model.User;
 import gr.uoa.di.cs.nonsqllogsdb.service.LogService;
+import gr.uoa.di.cs.nonsqllogsdb.service.UpvoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -109,5 +109,12 @@ public class LogController {
     public ResponseEntity<List<BlockCreation>> getBlockCreations() {
         List<BlockCreation> blockCreations = logService.findBlockCreations();
         return ResponseEntity.ok(blockCreations);
+    }
+    @Autowired
+    private UpvoteService upvoteService;
+    @PostMapping("/{logId}/upvote")
+    public ResponseEntity<Void> upvoteLog(@PathVariable String logId, @AuthenticationPrincipal User user) {
+        upvoteService.upvoteLog(logId, user.getId());
+        return ResponseEntity.ok().build();
     }
 }
