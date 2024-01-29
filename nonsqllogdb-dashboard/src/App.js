@@ -14,41 +14,70 @@ function App() {
   const [selectedApi, setSelectedApi] = useState(null);
   const [params, setParams] = useState({});
   const [data, setData] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token')); // If you're storing the token in localStorage
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   const handleParamChange = (e) => {
     const { name, value } = e.target;
     setParams(prevParams => ({ ...prevParams, [name]: value }));
   };
 
+  console.log(token)
+
   const isAuthenticated = () => {
-    // Check if the token is valid (exists, not expired, etc.)
-    // This is a simplified example; in a real app, you'd also need to check if the token is expired
     return token;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare parameters for API 10
     let apiParams = { ...params };
-    if (selectedApi.name === 'SQL Query 11') {
+    if (selectedApi.name === 'Query 1' || selectedApi.name === 'Query 2' || selectedApi.name === 'Query 4') {
       apiParams = {
         ...apiParams,
-        startDate: `${apiParams.startDate} 00:00:00`,
-        endDate: `${apiParams.endDate} 23:59:59`
+        start: `${apiParams.start}T00:00:00`,
+        end: `${apiParams.end}T23:59:59`
       };
     }
+    if (selectedApi.name === 'Query 3') {
+      apiParams = {
+        ...apiParams,
+        day: `${apiParams.day}T00:00:00`,
+      };
+    }
+
+    // Update the endpoint if it has a dynamic parameter
+    let endpoint = selectedApi.endpoint;
+    if (endpoint.includes('{logId}')) {
+      endpoint = endpoint.replace('{logId}', apiParams.logId);
+    }
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }
+    };
+
+    console.log("Axios Config:", config); // Debugging
+
     try {
-      const response = await axios.get(`http://localhost:8080${selectedApi.endpoint}`, {
-        params: apiParams
-      });
+      let response;
+      if (selectedApi.method === 'POST') {
+        response = await axios.post(`http://localhost:8080${endpoint}`, apiParams, config);
+      } else {
+        response = await axios.get(`http://localhost:8080${endpoint}`, {
+          params: apiParams,
+          headers: config.headers
+        });
+      }
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
       setData(null);
     }
   };
+
+
 
   const handleSelectApi = (api) => {
     setSelectedApi(api);
