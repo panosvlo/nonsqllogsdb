@@ -1,6 +1,7 @@
 package gr.uoa.di.cs.nonsqllogsdb.service;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.*;
+import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,13 @@ public class LogService {
 
     public List<BlockCreation> findBlockCreations() {
         return logRepository.findBlockCreations();
+    }
+
+    public List<LogUpvoteDTO> findTop50UpvotedLogsByDate(Date dayStart, Date dayEnd) {
+        List<Log> logs = logRepository.findTop50ByDate(dayStart, dayEnd);
+        return logs.stream()
+                .map(log -> new LogUpvoteDTO(log.getId(), log.getUpvoteCount()))
+                .collect(Collectors.toList());
     }
 
 }

@@ -107,4 +107,11 @@ public interface LogRepository extends MongoRepository<Log, String> {
     })
     List<BlockOperation> findBlocksReplicatedSameDayAsCreated();
 
+    @Aggregation(pipeline = {
+            "{ $match: { 'timestamp': { $gte: ?0, $lt: ?1 } } }",
+            "{ $sort: { 'upvoteCount': -1 } }",
+            "{ $limit: 50 }"
+    })
+    List<Log> findTop50ByDate(Date startOfDay, Date endOfDay);
+
 }

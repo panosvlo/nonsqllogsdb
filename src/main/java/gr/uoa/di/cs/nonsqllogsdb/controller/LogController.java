@@ -1,12 +1,14 @@
 package gr.uoa.di.cs.nonsqllogsdb.controller;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.*;
+import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import gr.uoa.di.cs.nonsqllogsdb.model.User;
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
 import gr.uoa.di.cs.nonsqllogsdb.repository.UserRepository;
 import gr.uoa.di.cs.nonsqllogsdb.service.LogService;
 import gr.uoa.di.cs.nonsqllogsdb.service.UpvoteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -127,5 +129,12 @@ public class LogController {
             }
         }
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/top50UpvotedLogs")
+    public ResponseEntity<List<LogUpvoteDTO>> getTopUpvotedLogsByDate(
+            @RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day) {
+        Date dayEnd = new Date(day.getTime() + 86400000); // Add one day in milliseconds
+        List<LogUpvoteDTO> topUpvotedLogs = logService.findTop50UpvotedLogsByDate(day, dayEnd);
+        return ResponseEntity.ok(topUpvotedLogs);
     }
 }

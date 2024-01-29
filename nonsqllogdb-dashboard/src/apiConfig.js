@@ -48,6 +48,14 @@ const apis = [
         params: [] // No parameters required for this API
 	},
     {
+        name: 'Query 7',
+        endpoint: '/api/logs/top50UpvotedLogs',
+        description: 'Find the fifty most upvoted logs for a specific day.',
+        params: [
+          { name: 'day', type: 'date', placeholder: 'Day', value: '' },
+        ]
+    },
+    {
         name: 'Upvote Log',
         endpoint: '/api/logs/{logId}/upvote',
         method: 'POST',
