@@ -6,6 +6,7 @@ import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import gr.uoa.di.cs.nonsqllogsdb.dto.EmailLogsDTO;
 
 import java.util.List;
 
@@ -33,4 +34,15 @@ public interface UpvoteRepository extends MongoRepository<Upvote, String> {
     })
     List<AdminIPsDTO> findTopFiftyAdminsWithMostDistinctIPs();
 
+    @Aggregation(pipeline = {
+            "{ $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'userDetails' } }",
+            "{ $unwind: '$userDetails' }",
+            "{ $lookup: { from: 'logs', localField: 'logId', foreignField: '_id', as: 'logDetails' } }",
+            "{ $unwind: '$logDetails' }",
+            "{ $lookup: { from: 'logtypes', localField: 'logDetails.log_type_id', foreignField: '_id', as: 'logTypeDetails' } }", // Adjust this line according to your LogType collection name
+            "{ $group: { _id: '$userDetails.email', usernames: { $addToSet: '$userDetails.username' }, logs: { $push: { id: '$logDetails._id', logType: { $arrayElemAt: ['$logTypeDetails', 0] }, timestamp: '$logDetails.timestamp', sourceIp: '$logDetails.source_ip', destinationIp: '$logDetails.destination_ip', details: '$logDetails.details', upvoteCount: '$logDetails.upvoteCount' } } } }",
+            "{ $match: { 'usernames.1': { $exists: true } } }",
+            "{ $project: { email: '$_id', usernames: 1, logs: 1, _id: 0 } }"
+    })
+    List<EmailLogsDTO> findLogsBySharedEmails();
 }

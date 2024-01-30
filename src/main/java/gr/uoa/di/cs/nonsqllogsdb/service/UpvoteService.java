@@ -2,6 +2,7 @@ package gr.uoa.di.cs.nonsqllogsdb.service;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
 import gr.uoa.di.cs.nonsqllogsdb.dto.AdminIPsDTO;
+import gr.uoa.di.cs.nonsqllogsdb.dto.EmailLogsDTO;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
@@ -46,5 +47,9 @@ public class UpvoteService {
 
     public List<AdminIPsDTO> getTopFiftyAdminsWithMostDistinctIPs() {
         return upvoteRepository.findTopFiftyAdminsWithMostDistinctIPs();
+    }
+
+    public List<EmailLogsDTO> getLogsBySharedEmails() {
+        return upvoteRepository.findLogsBySharedEmails();
     }
 }

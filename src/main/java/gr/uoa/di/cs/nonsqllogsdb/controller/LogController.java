@@ -148,4 +148,9 @@ public class LogController {
         List<AdminIPsDTO> admins = upvoteService.getTopFiftyAdminsWithMostDistinctIPs();
         return ResponseEntity.ok(admins);
     }
+
+    @GetMapping("/logsBySharedEmails")
+    public ResponseEntity<List<EmailLogsDTO>> getLogsBySharedEmails() {
+        return ResponseEntity.ok(upvoteService.getLogsBySharedEmails());
+    }
 }
