@@ -61,6 +61,12 @@ const apis = [
         description: 'Find the fifty most active administrators, with regard to the total number of upvotes.',
         params: [] // No parameters required for this API
 	},
+	{
+        name: 'Query 9',
+        endpoint: '/api/logs/topDistinctIPs',
+        description: 'Find the top fifty administrators, with regard to the total number of source IPs for which they have upvoted logs.',
+        params: [] // No parameters required for this API
+	},
     {
         name: 'Upvote Log',
         endpoint: '/api/logs/{logId}/upvote',

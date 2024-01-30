@@ -143,4 +143,9 @@ public class LogController {
         List<ActiveAdminDTO> activeAdmins = upvoteService.getTopFiftyActiveAdministrators();
         return ResponseEntity.ok(activeAdmins);
     }
+    @GetMapping("/topDistinctIPs")
+    public ResponseEntity<List<AdminIPsDTO>> getTopDistinctIPs() {
+        List<AdminIPsDTO> admins = upvoteService.getTopFiftyAdminsWithMostDistinctIPs();
+        return ResponseEntity.ok(admins);
+    }
 }

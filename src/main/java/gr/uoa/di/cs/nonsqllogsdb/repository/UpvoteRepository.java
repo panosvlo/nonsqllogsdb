@@ -1,6 +1,7 @@
 package gr.uoa.di.cs.nonsqllogsdb.repository;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
+import gr.uoa.di.cs.nonsqllogsdb.dto.AdminIPsDTO;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -20,4 +21,16 @@ public interface UpvoteRepository extends MongoRepository<Upvote, String> {
             "{ $project: { username: '$userDetails.username', totalUpvotes: 1 } }"
     })
     List<ActiveAdminDTO> findTopFiftyActiveAdministrators();
+    @Aggregation(pipeline = {
+            "{ $lookup: { from: 'logs', localField: 'logId', foreignField: '_id', as: 'logDetails' } }",
+            "{ $unwind: '$logDetails' }",
+            "{ $group: { _id: '$userId', distinctSourceIPs: { $addToSet: '$logDetails.source_ip' } } }",
+            "{ $project: { userId: '$_id', _id: 0, distinctIPCount: { $size: '$distinctSourceIPs' }, sourceIPs: '$distinctSourceIPs' } }",
+            "{ $sort: { distinctIPCount: -1 } }",
+            "{ $limit: 50 }",
+            "{ $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'userDetails' } }",
+            "{ $project: { userId: 1, distinctIPCount: 1, sourceIPs: 1, username: { $arrayElemAt: [\"$userDetails.username\", 0] } } }"
+    })
+    List<AdminIPsDTO> findTopFiftyAdminsWithMostDistinctIPs();
+
 }
