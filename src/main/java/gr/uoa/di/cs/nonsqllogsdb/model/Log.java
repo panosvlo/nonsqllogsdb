@@ -1,8 +1,10 @@
 package gr.uoa.di.cs.nonsqllogsdb.model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 import java.util.List;
@@ -22,12 +24,15 @@ public class Log {
     private List<LogDetail> details;
 
     private int upvoteCount = 0;
+    @Field("log_type_id")
+    private ObjectId log_type_id;
 
     // Constructors
     public Log() {
     }
 
-    public Log(LogType logType, Date timestamp, String sourceIp, String destinationIp, List<LogDetail> details) {
+    public Log(ObjectId log_type_id, Date timestamp, String sourceIp, String destinationIp, List<LogDetail> details) {
+        this.log_type_id = log_type_id;
         this.logType = logType;
         this.timestamp = timestamp;
         this.sourceIp = sourceIp;
@@ -91,4 +96,12 @@ public class Log {
     public void setUpvoteCount(int upvoteCount) {
         this.upvoteCount = upvoteCount;
     }
+    public ObjectId  getLogTypeId() {
+        return log_type_id;
+    }
+
+    public void setLogTypeId(ObjectId  logTypeId) {
+        this.log_type_id = logTypeId;
+    }
+
 }

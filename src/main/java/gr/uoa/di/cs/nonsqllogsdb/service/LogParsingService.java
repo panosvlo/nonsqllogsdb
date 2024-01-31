@@ -4,6 +4,7 @@ import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import gr.uoa.di.cs.nonsqllogsdb.model.LogDetail;
 import gr.uoa.di.cs.nonsqllogsdb.model.LogType;
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,8 +66,8 @@ public class LogParsingService {
             details.add(new LogDetail("size", sizeStr));
             if (referer != null) details.add(new LogDetail("referer", referer));
             details.add(new LogDetail("user_agent", userAgent));
-
-            return new Log(logType, dateFormat.parse(timestampStr), ip, null, details);
+            ObjectId logTypeId = new ObjectId(logType.getId()); // Convert to ObjectId
+            return new Log(logTypeId, dateFormat.parse(timestampStr), ip, null, details);
         }
 
         return null;
@@ -122,8 +123,8 @@ public class LogParsingService {
                 String size = sizeMatcher.group(1);
                 logDetails.add(new LogDetail("size", size));
             }
-
-            return new Log(logType, timestamp, null, null, logDetails);
+            ObjectId logTypeId = new ObjectId(logType.getId());
+            return new Log(logTypeId, dateFormat.parse(datetimeStr), null, null, logDetails);
         }
         return null;
     }
@@ -173,8 +174,8 @@ public class LogParsingService {
             // Assuming sourceIp and destinationIp should be set to the IP without the port
             String sourceIp = srcParts[0].substring(1); // Remove leading '/'
             String destIp = destParts[0].substring(1); // Remove leading '/'
-
-            return new Log(logType, timestamp, sourceIp, destIp, logDetails);
+            ObjectId logTypeId = new ObjectId(logType.getId());
+            return new Log(logTypeId, dateFormat.parse(datetimeStr), sourceIp, destIp, logDetails);
         }
         return null;
     }
