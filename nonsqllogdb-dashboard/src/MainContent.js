@@ -7,16 +7,28 @@ const logTypeDescriptions = {
   '2': 'hdfs_dataxceiver_log'
 };
 
-const MainContent = ({ data }) => {
-  // Handle case where data is not an array
+const MainContent = ({ data, selectedApi }) => {
   if (!data) return null;
 
   if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('email')) {
     return <UserLogsDisplay userLogs={data} />;
   }
 
-  // Check if data is an array, otherwise make it an array
-  const dataArray = Array.isArray(data) ? data : [data];
+  let dataArray;
+  if (Array.isArray(data)) {
+    dataArray = data;
+  } else if (data !== null && typeof data === 'object') {
+    if (selectedApi && selectedApi.name === 'Query 6') {
+      // Handling for Query 6
+      dataArray = Object.entries(data).map(([blockId, count]) => ({ blockId, count }));
+    } else {
+      // Default handling for object type responses (including Query 5)
+      dataArray = [data];
+    }
+  } else {
+    dataArray = [data];
+  }
+
   const keys = dataArray.length > 0 ? Object.keys(dataArray[0]) : [];
 
   return (
@@ -32,8 +44,8 @@ const MainContent = ({ data }) => {
             <tr key={index}>
               {keys.map(key => (
                 <td key={key}>
-                  {key === 'logTypeName' ? logTypeDescriptions[item[key].toString()] : item[key]}
-                 </td>
+                  {Array.isArray(item[key]) ? item[key].join(', ') : item[key]}
+                </td>
               ))}
             </tr>
           ))}
