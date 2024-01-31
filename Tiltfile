@@ -15,3 +15,18 @@ local_resource(
   labels=['frontend'],
   resource_deps=['backend', 'frontend_dependencies']
 )
+
+# Backend Configuration
+
+local_resource(
+  'backend_dependencies',
+  cmd='mvn install -DskipTests',
+  labels=['dependencies'],
+)
+
+local_resource(
+  'backend',
+  serve_cmd='mvn spring-boot:run',
+  labels=['backend'],
+  resource_deps=['mongodb', 'backend_dependencies'],
+)

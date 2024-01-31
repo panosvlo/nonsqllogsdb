@@ -19,7 +19,8 @@ public class Log {
     private LogType logType;
 
     private Date timestamp;
-    private String sourceIp;
+    @Field("source_ip")
+    private String source_ip;
     private String destinationIp;
     private List<LogDetail> details;
 
@@ -35,7 +36,7 @@ public class Log {
         this.log_type_id = log_type_id;
         this.logType = logType;
         this.timestamp = timestamp;
-        this.sourceIp = sourceIp;
+        this.source_ip = source_ip;
         this.destinationIp = destinationIp;
         this.details = details;
     }
@@ -66,11 +67,11 @@ public class Log {
     }
 
     public String getSourceIp() {
-        return sourceIp;
+        return source_ip;
     }
 
     public void setSourceIp(String sourceIp) {
-        this.sourceIp = sourceIp;
+        this.source_ip = sourceIp;
     }
 
     public String getDestinationIp() {

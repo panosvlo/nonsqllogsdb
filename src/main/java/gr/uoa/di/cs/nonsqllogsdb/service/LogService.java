@@ -97,5 +97,7 @@ public class LogService {
                 .map(log -> new LogUpvoteDTO(log.getId(), log.getUpvoteCount()))
                 .collect(Collectors.toList());
     }
-
+    public List<Log> getLogsByTypeAndDate(String typeName, Date start, Date end) {
+        return logRepository.findLogsByTypeAndTimestamp(typeName, start, end);
+    }
 }

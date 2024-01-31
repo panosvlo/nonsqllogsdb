@@ -199,4 +199,13 @@ public class LogController {
             return ResponseEntity.badRequest().body("Failed to upload and parse file: " + e.getMessage());
         }
     }
+    @GetMapping
+    public ResponseEntity<List<Log>> getLogs(
+            @RequestParam(required = false) String typeName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date end) {
+
+        List<Log> logs = logService.getLogsByTypeAndDate(typeName, start, end);
+        return ResponseEntity.ok(logs);
+    }
 }

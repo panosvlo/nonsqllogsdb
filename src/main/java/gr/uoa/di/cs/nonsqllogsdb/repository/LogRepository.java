@@ -114,4 +114,11 @@ public interface LogRepository extends MongoRepository<Log, String> {
     })
     List<Log> findTop50ByDate(Date startOfDay, Date endOfDay);
 
+    @Aggregation(pipeline = {
+            "{ $lookup: { from: 'log_types', localField: 'log_type_id', foreignField: '_id', as: 'log_type' } }",
+            "{ $unwind: '$log_type' }",
+            "{ $match: { $and: [ { 'log_type.type_name': ?0 }, { timestamp: { $gte: ?1, $lte: ?2 } } ] } }",
+            "{ $project: { _id: 1, timestamp: 1, source_ip: 1, destination_ip: 1, details: 1, upvoteCount: 1 } }"
+    })
+    List<Log> findLogsByTypeAndTimestamp(String typeName, Date start, Date end);
 }
