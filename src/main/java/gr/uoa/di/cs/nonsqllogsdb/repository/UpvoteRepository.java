@@ -39,7 +39,9 @@ public interface UpvoteRepository extends MongoRepository<Upvote, String> {
             "{ $unwind: '$user_data' }",
             "{ $group: { _id: '$user_data.email', usernames: { $addToSet: '$user_data.username' }, logIds: { $addToSet: '$logId' } } }",
             "{ $match: { 'usernames.1': { $exists: true } } }",
-            "{ $lookup: { from: 'logs', localField: 'logIds', foreignField: '_id', as: 'logs' } }"
+            "{ $lookup: { from: 'logs', localField: 'logIds', foreignField: '_id', as: 'logs' } }",
+            "{ $project: { email: '$_id', usernames: 1, logs: 1, _id: 0 } }"
     })
     List<IntermediateUserLogsDTO> findMultiUsernameLogs();
+
 }
