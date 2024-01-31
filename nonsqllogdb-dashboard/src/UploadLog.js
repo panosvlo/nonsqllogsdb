@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 function UploadLog({ setData }) {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [logTypeId, setLogTypeId] = useState('');
+  const [logTypeName, setLogTypeId] = useState('');
   const [uploadMessage, setUploadMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ function UploadLog({ setData }) {
     setIsLoading(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
-    formData.append('logTypeId', logTypeId);
+    formData.append('logTypeName', logTypeName);
 
     try {
       const response = await axios.post('http://localhost:8080/api/logs/upload', formData, {
@@ -49,11 +49,11 @@ function UploadLog({ setData }) {
       <form onSubmit={handleUpload}>
         <div>
           <label>Log Type:</label>
-          <select value={logTypeId} onChange={(e) => setLogTypeId(e.target.value)} required>
+          <select value={logTypeName} onChange={(e) => setLogTypeId(e.target.value)} required>
             <option value="">Select Log Type</option>
-            <option value="1">access_log</option>
-            <option value="3">HDFS_FS_Namesystem</option>
-            <option value="2">HDFS_DataXceiver</option>
+            <option value="access_log">access_log</option>
+            <option value="HDFS_FS_Namesystem">HDFS_FS_Namesystem</option>
+            <option value="HDFS_DataXceiver">HDFS_DataXceiver</option>
           </select>
         </div>
         <div>

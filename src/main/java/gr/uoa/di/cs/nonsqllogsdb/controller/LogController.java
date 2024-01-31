@@ -2,9 +2,12 @@ package gr.uoa.di.cs.nonsqllogsdb.controller;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.*;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
+import gr.uoa.di.cs.nonsqllogsdb.model.LogType;
 import gr.uoa.di.cs.nonsqllogsdb.model.User;
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
+import gr.uoa.di.cs.nonsqllogsdb.repository.LogTypeRepository;
 import gr.uoa.di.cs.nonsqllogsdb.repository.UserRepository;
+import gr.uoa.di.cs.nonsqllogsdb.service.LogParsingService;
 import gr.uoa.di.cs.nonsqllogsdb.service.LogService;
 import gr.uoa.di.cs.nonsqllogsdb.service.UpvoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -162,5 +166,26 @@ public class LogController {
     public ResponseEntity<List<UserBlockDTO>> getBlockIdsForUser(@RequestParam String username) {
         List<UserBlockDTO> blockIds = upvoteService.getBlockIdsForUser(username);
         return ResponseEntity.ok(blockIds);
+    }
+    @Autowired
+    private LogParsingService accessLogService;
+
+    @Autowired
+    private LogTypeRepository logTypeRepository;
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadLogFile(@ModelAttribute LogFileUploadDTO logFileUploadDTO) {
+        try {
+
+            LogType logType = logTypeRepository.findByTypeName(logFileUploadDTO.getLogTypeName());
+            if (logType == null) {
+                return ResponseEntity.badRequest().body("Invalid log type name.");
+            }
+
+            accessLogService.parseAndStoreAccessLog(logFileUploadDTO.getFile(), logType);
+            return ResponseEntity.ok("File uploaded and parsed successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to upload and parse file: " + e.getMessage());
+        }
     }
 }

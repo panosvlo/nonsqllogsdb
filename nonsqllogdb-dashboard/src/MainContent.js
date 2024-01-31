@@ -24,7 +24,7 @@ const MainContent = ({ data }) => {
       <table>
         <thead>
           <tr>
-            {keys.map(key => <th key={key}>{key === 'logTypeId' ? 'Log Type' : key}</th>)}
+            {keys.map(key => <th key={key}>{key === 'logTypeName' ? 'Log Type' : key}</th>)}
           </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@ const MainContent = ({ data }) => {
             <tr key={index}>
               {keys.map(key => (
                 <td key={key}>
-                  {key === 'logTypeId' ? logTypeDescriptions[item[key].toString()] : item[key]}
+                  {key === 'logTypeName' ? logTypeDescriptions[item[key].toString()] : item[key]}
                  </td>
               ))}
             </tr>
