@@ -158,9 +158,9 @@ public class LogController {
             return ResponseEntity.status(500).body(null);
         }
     }
-    @GetMapping("/blockIds/{userName}")
-    public ResponseEntity<List<UserBlockDTO>> getBlockIdsForUser(@PathVariable String userName) {
-        List<UserBlockDTO> blockIds = upvoteService.getBlockIdsForUser(userName);
+    @GetMapping("/blockIds")
+    public ResponseEntity<List<UserBlockDTO>> getBlockIdsForUser(@RequestParam String username) {
+        List<UserBlockDTO> blockIds = upvoteService.getBlockIdsForUser(username);
         return ResponseEntity.ok(blockIds);
     }
 }

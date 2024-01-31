@@ -68,6 +68,14 @@ const apis = [
         params: [] // No parameters required for this API
 	},
     {
+        name: 'Query 11',
+        endpoint: '/api/logs/blockIds',
+        description: 'Find all the block ids for which a given name has casted a vote for a log involving it.',
+        params: [
+          { name: 'username', type: 'text', placeholder: 'Username', value: '' }
+        ]
+    },
+    {
         name: 'Upvote Log',
         endpoint: '/api/logs/{logId}/upvote',
         method: 'POST',
