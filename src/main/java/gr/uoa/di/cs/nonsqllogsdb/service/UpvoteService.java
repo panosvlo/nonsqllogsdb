@@ -1,9 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.service;
 
-import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
-import gr.uoa.di.cs.nonsqllogsdb.dto.AdminIPsDTO;
-import gr.uoa.di.cs.nonsqllogsdb.dto.IntermediateUserLogsDTO;
-import gr.uoa.di.cs.nonsqllogsdb.dto.UserLogsDTO;
+import gr.uoa.di.cs.nonsqllogsdb.dto.*;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import gr.uoa.di.cs.nonsqllogsdb.repository.LogRepository;
@@ -71,5 +68,8 @@ public class UpvoteService {
 
         dto.setLogs(logs);
         return dto;
+    }
+    public List<UserBlockDTO> getBlockIdsForUser(String userName) {
+        return upvoteRepository.findBlockIdsForUser(userName);
     }
 }

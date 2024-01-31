@@ -1,9 +1,6 @@
 package gr.uoa.di.cs.nonsqllogsdb.repository;
 
-import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
-import gr.uoa.di.cs.nonsqllogsdb.dto.AdminIPsDTO;
-import gr.uoa.di.cs.nonsqllogsdb.dto.IntermediateUserLogsDTO;
-import gr.uoa.di.cs.nonsqllogsdb.dto.UserLogsDTO;
+import gr.uoa.di.cs.nonsqllogsdb.dto.*;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -43,5 +40,16 @@ public interface UpvoteRepository extends MongoRepository<Upvote, String> {
             "{ $project: { email: '$_id', usernames: 1, logs: 1, _id: 0 } }"
     })
     List<IntermediateUserLogsDTO> findMultiUsernameLogs();
-
+    @Aggregation(pipeline = {
+            "{ $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user_data' } }",
+            "{ $unwind: '$user_data' }",
+            "{ $match: { 'user_data.name': ?0 } }",
+            "{ $lookup: { from: 'logs', localField: 'logId', foreignField: '_id', as: 'log_details' } }",
+            "{ $unwind: '$log_details' }",
+            "{ $unwind: '$log_details.details' }",
+            "{ $match: { 'log_details.details.key': 'block_id' } }",
+            "{ $group: { _id: '$log_details.details.value' } }",
+            "{ $project: { blockId: '$_id', _id: 0 } }"
+    })
+    List<UserBlockDTO> findBlockIdsForUser(String userName);
 }
