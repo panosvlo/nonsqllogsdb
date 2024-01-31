@@ -22,7 +22,7 @@ Here are the tools you'll need to install before you get started:
 #### Initalizing the mongo database
 
 To initialize the database using the logs files access_log, HDFS_DataXceiver.log and HDFS_FS_Namesystem.log, place the log files under the dbinit directory ([here](dbinit)).
-Replace the related file names in the line 163 of the db_init.py python script:
+Replace the related file names in the line 163 of the [db_init.py](dbinit/db_init.py) python script:
 ```bash
     file_paths_and_types = [
         ('access_log_full', 'access_log'),
@@ -30,12 +30,12 @@ Replace the related file names in the line 163 of the db_init.py python script:
         ('HDFS_DataXceiver.log.short', 'hdfs_dataxceiver_log')
     ]
 ```
-Then configure the connection to the database in the line 146 and 147 of the db_init.py script:
+Then configure the connection to the database in the line 146 and 147 of the [db_init.py](dbinit/db_init.py) script:
 ```bash
     client = MongoClient('localhost', 27017)
     db = client['logs_database']
 ```
-Now if you want to initialize your database using your provided files, run:
+Now if you want to initialize your database using your provided files, run the below commands:
 ```bash
 cd dbinit
 pip install -r requirements.txt

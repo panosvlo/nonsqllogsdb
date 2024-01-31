@@ -101,22 +101,22 @@ function App() {
 
 
   const ContentWithSidebar = () => {
-    const location = useLocation();
+      const location = useLocation();
 
-    return (
-      <>
-        {location.pathname !== '/upload' && <Sidebar apis={apis} selectedApi={selectedApi} onSelectApi={handleSelectApi} />}
-        <div className="content-container">
-          <Routes>
-            <Route path="/" element={selectedApi && <ApiForm api={selectedApi} params={params} onParamChange={handleParamChange} onSubmit={handleSubmit} />} />
-            <Route path="/upload" element={<UploadLog setData={setData} />} />
-            <Route path="/upvote-logs" element={<UpvoteLogs />} />
-            <Route path="*" element={<Navigate replace to="/" />} />
-          </Routes>
-          {location.pathname !== '/upload' && <MainContent data={data} />}
-        </div>
-      </>
-    );
+      return (
+        <>
+          {location.pathname !== '/upload' && <Sidebar apis={apis} selectedApi={selectedApi} onSelectApi={handleSelectApi} />}
+          <div className="content-container">
+            <Routes>
+              <Route path="/" element={selectedApi && <ApiForm api={selectedApi} params={params} onParamChange={handleParamChange} onSubmit={handleSubmit} />} />
+              <Route path="/upload" element={<UploadLog setData={setData} />} />
+              <Route path="/upvote-logs" element={<UpvoteLogs />} />
+              <Route path="*" element={<Navigate replace to="/" />} />
+            </Routes>
+            {location.pathname !== '/upload' && <MainContent data={data} selectedApi={selectedApi} />}
+          </div>
+        </>
+      );
   };
 
   if (!isAuthenticated()) {
