@@ -2,11 +2,11 @@ package gr.uoa.di.cs.nonsqllogsdb.repository;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
 import gr.uoa.di.cs.nonsqllogsdb.dto.AdminIPsDTO;
+import gr.uoa.di.cs.nonsqllogsdb.dto.UserLogsDTO;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import gr.uoa.di.cs.nonsqllogsdb.dto.EmailLogsDTO;
 
 import java.util.List;
 
@@ -33,16 +33,15 @@ public interface UpvoteRepository extends MongoRepository<Upvote, String> {
             "{ $project: { userId: 1, distinctIPCount: 1, sourceIPs: 1, username: { $arrayElemAt: [\"$userDetails.username\", 0] } } }"
     })
     List<AdminIPsDTO> findTopFiftyAdminsWithMostDistinctIPs();
-
     @Aggregation(pipeline = {
-            "{ $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'userDetails' } }",
-            "{ $unwind: '$userDetails' }",
-            "{ $lookup: { from: 'logs', localField: 'logId', foreignField: '_id', as: 'logDetails' } }",
-            "{ $unwind: '$logDetails' }",
-            "{ $lookup: { from: 'logtypes', localField: 'logDetails.log_type_id', foreignField: '_id', as: 'logTypeDetails' } }", // Adjust this line according to your LogType collection name
-            "{ $group: { _id: '$userDetails.email', usernames: { $addToSet: '$userDetails.username' }, logs: { $push: { id: '$logDetails._id', logType: { $arrayElemAt: ['$logTypeDetails', 0] }, timestamp: '$logDetails.timestamp', sourceIp: '$logDetails.source_ip', destinationIp: '$logDetails.destination_ip', details: '$logDetails.details', upvoteCount: '$logDetails.upvoteCount' } } } }",
+            "{ $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user_data' } }",
+            "{ $unwind: '$user_data' }",
+            "{ $group: { _id: '$user_data.email', usernames: { $addToSet: '$user_data.username' }, logIds: { $addToSet: '$logId' } } }",
             "{ $match: { 'usernames.1': { $exists: true } } }",
-            "{ $project: { email: '$_id', usernames: 1, logs: 1, _id: 0 } }"
+            "{ $lookup: { from: 'logs', localField: 'logIds', foreignField: '_id', as: 'logs' } }",
+            "{ $project: { _id: 0, email: '$_id', usernames: 1, logs: { $map: { input: '$logs', as: 'log', in: { id: { $toObjectId: '$$log._id' }, timestamp: '$$log.timestamp', upvoteCount: '$$log.upvoteCount' } } } } }"
     })
-    List<EmailLogsDTO> findLogsBySharedEmails();
+    List<UserLogsDTO> findMultiUsernameLogs();
+
+
 }
