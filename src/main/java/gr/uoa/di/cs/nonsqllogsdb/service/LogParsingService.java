@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -68,6 +69,62 @@ public class LogParsingService {
             return new Log(logType, dateFormat.parse(timestampStr), ip, null, details);
         }
 
+        return null;
+    }
+
+    private static final Pattern HDFS_FS_NAMESYSTEM_LOG_PATTERN = Pattern.compile(
+            "(\\d{6} \\d{6}) (\\d+) (\\S+) (dfs\\.FSNamesystem): (BLOCK\\*) (\\S+): (.+)"
+    );
+
+    public void parseAndStoreHdfsFsNamesystemLog(MultipartFile file, LogType logType) throws IOException, ParseException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Log logEntry = parseHdfsFsNamesystemLogLine(line, logType);
+                if (logEntry != null) {
+                    logRepository.save(logEntry);
+                }
+            }
+        }
+    }
+    private static final Pattern BLOCK_ID_PATTERN = Pattern.compile("blk_(-?\\d+)");
+    private static final Pattern SIZE_PATTERN = Pattern.compile("size (\\d+)");
+
+    private Log parseHdfsFsNamesystemLogLine(String line, LogType logType) throws ParseException {
+        Matcher matcher = HDFS_FS_NAMESYSTEM_LOG_PATTERN.matcher(line);
+        if (matcher.matches()) {
+            String datetimeStr = matcher.group(1);
+            String threadId = matcher.group(2);
+            String logLevel = matcher.group(3);
+            String component = matcher.group(4);
+            String operation = matcher.group(6);
+            String details = matcher.group(7);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd HHmmss", Locale.ENGLISH);
+            Date timestamp = dateFormat.parse(datetimeStr);
+
+            List<LogDetail> logDetails = new ArrayList<>();
+            logDetails.add(new LogDetail("thread_id", threadId));
+            logDetails.add(new LogDetail("log_level", logLevel));
+            logDetails.add(new LogDetail("component", component));
+            logDetails.add(new LogDetail("operation", operation));
+            logDetails.add(new LogDetail("details", details));
+
+            // New section for extracting block ID and size
+            Matcher blockIdMatcher = BLOCK_ID_PATTERN.matcher(details);
+            if (blockIdMatcher.find()) {
+                String blockId = blockIdMatcher.group(1);
+                logDetails.add(new LogDetail("block_id", blockId));
+            }
+
+            Matcher sizeMatcher = SIZE_PATTERN.matcher(details);
+            if (sizeMatcher.find()) {
+                String size = sizeMatcher.group(1);
+                logDetails.add(new LogDetail("size", size));
+            }
+
+            return new Log(logType, timestamp, null, null, logDetails);
+        }
         return null;
     }
 }

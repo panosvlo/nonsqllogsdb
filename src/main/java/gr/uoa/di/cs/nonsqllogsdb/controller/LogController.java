@@ -168,7 +168,7 @@ public class LogController {
         return ResponseEntity.ok(blockIds);
     }
     @Autowired
-    private LogParsingService accessLogService;
+    private LogParsingService parsingLogService;
 
     @Autowired
     private LogTypeRepository logTypeRepository;
@@ -176,13 +176,21 @@ public class LogController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadLogFile(@ModelAttribute LogFileUploadDTO logFileUploadDTO) {
         try {
-
             LogType logType = logTypeRepository.findByTypeName(logFileUploadDTO.getLogTypeName());
             if (logType == null) {
                 return ResponseEntity.badRequest().body("Invalid log type name.");
             }
 
-            accessLogService.parseAndStoreAccessLog(logFileUploadDTO.getFile(), logType);
+            switch (logFileUploadDTO.getLogTypeName()) {
+                case "access_log":
+                    parsingLogService.parseAndStoreAccessLog(logFileUploadDTO.getFile(), logType);
+                    break;
+                case "hdfs_fs_namesystem_log":
+                    parsingLogService.parseAndStoreHdfsFsNamesystemLog(logFileUploadDTO.getFile(), logType);
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Unsupported log type.");
+            }
             return ResponseEntity.ok("File uploaded and parsed successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to upload and parse file: " + e.getMessage());

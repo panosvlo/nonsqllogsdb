@@ -52,7 +52,7 @@ function UploadLog({ setData }) {
           <select value={logTypeName} onChange={(e) => setLogTypeId(e.target.value)} required>
             <option value="">Select Log Type</option>
             <option value="access_log">access_log</option>
-            <option value="HDFS_FS_Namesystem">HDFS_FS_Namesystem</option>
+            <option value="hdfs_fs_namesystem_log">hdfs_fs_namesystem_log</option>
             <option value="HDFS_DataXceiver">HDFS_DataXceiver</option>
           </select>
         </div>

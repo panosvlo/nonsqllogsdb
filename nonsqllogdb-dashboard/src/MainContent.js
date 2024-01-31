@@ -3,7 +3,7 @@ import UserLogsDisplay from './UserLogsDisplay';
 
 const logTypeDescriptions = {
   '1': 'access_log',
-  '3': 'HDFS_FS_Namesystem',
+  '3': 'hdfs_fs_namesystem_log',
   '2': 'HDFS_DataXceiver'
 };
 
