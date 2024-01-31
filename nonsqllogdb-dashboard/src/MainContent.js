@@ -1,4 +1,5 @@
 import React from 'react';
+import UserLogsDisplay from './UserLogsDisplay';
 
 const logTypeDescriptions = {
   '1': 'access_log',
@@ -9,6 +10,10 @@ const logTypeDescriptions = {
 const MainContent = ({ data }) => {
   // Handle case where data is not an array
   if (!data) return null;
+
+  if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('email')) {
+    return <UserLogsDisplay userLogs={data} />;
+  }
 
   // Check if data is an array, otherwise make it an array
   const dataArray = Array.isArray(data) ? data : [data];

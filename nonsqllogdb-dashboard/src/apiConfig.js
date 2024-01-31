@@ -67,6 +67,12 @@ const apis = [
         description: 'Find the top fifty administrators, with regard to the total number of source IPs for which they have upvoted logs.',
         params: [] // No parameters required for this API
 	},
+	{
+        name: 'Query 10',
+        endpoint: '/api/logs/multiUsernameLogs',
+        description: ' Find all logs for which the same e-mail has been used for more than one usernames when casting an upvote.',
+        params: [] // No parameters required for this API
+	},
     {
         name: 'Query 11',
         endpoint: '/api/logs/blockIds',
