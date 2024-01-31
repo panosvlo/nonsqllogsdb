@@ -9,29 +9,29 @@ const UpvoteLogs = () => {
     const [endDate, setEndDate] = useState('2005-06-30');
     const token = localStorage.getItem('token');
 
-    useEffect(() => {
-        fetchLogs();
-    }, [logType, startDate, endDate]);
-
     const fetchLogs = async () => {
-        try {
-            const formattedStartDate = new Date(startDate).toISOString(); // Convert to ISO string
-            const formattedEndDate = new Date(endDate + "T23:59:59.999Z").toISOString(); // Add time and convert to ISO string
+            try {
+                const formattedStartDate = new Date(startDate).toISOString(); // Convert to ISO string
+                const formattedEndDate = new Date(endDate + "T23:59:59.999Z").toISOString(); // Add time and convert to ISO string
 
-            const response = await axios.get(`http://localhost:8080/api/logs`, {
-                params: {
-                    typeName: logType,
-                    start: formattedStartDate,
-                    end: formattedEndDate
-                },
-                headers: token ? { Authorization: `Bearer ${token}` } : {}
-            });
-            setLogs(response.data);
-        } catch (error) {
-            console.error('Error fetching logs:', error);
-        }
+                const response = await axios.get(`http://localhost:8080/api/logs`, {
+                    params: {
+                        typeName: logType,
+                        start: formattedStartDate,
+                        end: formattedEndDate
+                    },
+                    headers: token ? { Authorization: `Bearer ${token}` } : {}
+                });
+                setLogs(response.data);
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+            }
+        };
+
+
+    const handleSearch = () => {
+        fetchLogs();
     };
-
 
     const handleUpvote = async (logId) => {
         try {
@@ -64,6 +64,7 @@ const UpvoteLogs = () => {
                     End Date:
                     <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                 </label>
+                <button onClick={handleSearch}>Search Logs</button>
                 <UpvoteLogsDisplay logs={logs} handleUpvote={handleUpvote} />
             </div>
             <div>

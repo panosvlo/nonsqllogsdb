@@ -21,8 +21,6 @@ function App() {
     setParams(prevParams => ({ ...prevParams, [name]: value }));
   };
 
-  console.log(token)
-
   const isAuthenticated = () => {
     return token;
   };
