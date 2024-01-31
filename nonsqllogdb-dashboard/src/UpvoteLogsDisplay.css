@@ -1,0 +1,52 @@
+.upvote-logs-container {
+  /* Your container styles */
+}
+
+.log-entry {
+  /* Your log entry styles */
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.log-header {
+  /* Flex container for log header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.log-id,
+.log-timestamp,
+.log-source-ip,
+.log-upvote-count {
+  /* Individual log item styles */
+  margin-right: 1rem;
+}
+
+.upvote-button {
+  /* Button styles */
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.log-details {
+  /* Styles for log details section */
+}
+
+.log-details h4 {
+  /* Heading styles */
+}
+
+.logs-list {
+  /* Styles for the details list */
+  list-style: none;
+  padding: 0;
+}
+
+.logs-list .log-item {
+  /* Styles for each detail item */
+  padding: 0.5rem 0;
+}

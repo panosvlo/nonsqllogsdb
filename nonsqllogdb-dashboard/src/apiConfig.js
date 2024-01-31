@@ -81,15 +81,15 @@ const apis = [
           { name: 'username', type: 'text', placeholder: 'Username', value: '' }
         ]
     },
-    {
-        name: 'Upvote Log',
-        endpoint: '/api/logs/{logId}/upvote',
-        method: 'POST',
-        description: 'Upvote a specific log by its ID.',
-        params: [
-          { name: 'logId', type: 'text', placeholder: 'Log ID', value: '' }
-        ]
-    },
+//    {
+//        name: 'Upvote Log',
+//        endpoint: '/api/logs/{logId}/upvote',
+//        method: 'POST',
+//        description: 'Upvote a specific log by its ID.',
+//        params: [
+//          { name: 'logId', type: 'text', placeholder: 'Log ID', value: '' }
+//        ]
+//    },
 ];
 
 export default apis;

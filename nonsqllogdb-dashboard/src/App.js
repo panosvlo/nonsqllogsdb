@@ -9,7 +9,7 @@ import apis from './apiConfig'; // Import your API configuration
 import Login from './Login';
 import Register from './Register';
 import UploadLog from './UploadLog';
-
+import UpvoteLogs from './UpvoteLogs';
 function App() {
   const [selectedApi, setSelectedApi] = useState(null);
   const [params, setParams] = useState({});
@@ -112,7 +112,7 @@ function App() {
           <Routes>
             <Route path="/" element={selectedApi && <ApiForm api={selectedApi} params={params} onParamChange={handleParamChange} onSubmit={handleSubmit} />} />
             <Route path="/upload" element={<UploadLog setData={setData} />} />
-            {/* Add more protected routes as needed */}
+            <Route path="/upvote-logs" element={<UpvoteLogs />} />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
           {location.pathname !== '/upload' && <MainContent data={data} />}
@@ -138,6 +138,7 @@ function App() {
       <div className="nav-links">
         <Link to="/" className="nav-link">Home</Link>
         <Link to="/upload" className="nav-link">Upload</Link>
+        <Link to="/upvote-logs" className="nav-link">Upvote Logs</Link>
       </div>
       <div>
         <button onClick={logout} className="logout-button">Logout</button>
