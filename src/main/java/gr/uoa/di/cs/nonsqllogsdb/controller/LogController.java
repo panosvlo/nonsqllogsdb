@@ -149,8 +149,14 @@ public class LogController {
         return ResponseEntity.ok(admins);
     }
     @GetMapping("/multiUsernameLogs")
-    public ResponseEntity<List<UserLogsDTO>> getLogsForMultipleUsernames() {
-        List<UserLogsDTO> logs = upvoteService.getLogsForMultipleUsernames();
-        return ResponseEntity.ok(logs);
+    public ResponseEntity<List<UserLogsDTO>> getMultiUsernameLogs() {
+        try {
+            List<UserLogsDTO> userLogs = upvoteService.getMultiUsernameLogs();
+            return ResponseEntity.ok(userLogs);
+        } catch (Exception e) {
+            // Handle exceptions appropriately
+            return ResponseEntity.status(500).body(null);
+        }
     }
+
 }

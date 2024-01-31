@@ -2,6 +2,7 @@ package gr.uoa.di.cs.nonsqllogsdb.service;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
 import gr.uoa.di.cs.nonsqllogsdb.dto.AdminIPsDTO;
+import gr.uoa.di.cs.nonsqllogsdb.dto.IntermediateUserLogsDTO;
 import gr.uoa.di.cs.nonsqllogsdb.dto.UserLogsDTO;
 import gr.uoa.di.cs.nonsqllogsdb.model.Log;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UpvoteService {
@@ -48,7 +50,26 @@ public class UpvoteService {
     public List<AdminIPsDTO> getTopFiftyAdminsWithMostDistinctIPs() {
         return upvoteRepository.findTopFiftyAdminsWithMostDistinctIPs();
     }
-    public List<UserLogsDTO> getLogsForMultipleUsernames() {
-        return upvoteRepository.findMultiUsernameLogs();
+    public List<UserLogsDTO> getMultiUsernameLogs() {
+        List<IntermediateUserLogsDTO> intermediateResults = upvoteRepository.findMultiUsernameLogs();
+
+        return intermediateResults.stream().map(this::transformToUserLogsDTO).collect(Collectors.toList());
+    }
+
+    private UserLogsDTO transformToUserLogsDTO(IntermediateUserLogsDTO intermediate) {
+        UserLogsDTO dto = new UserLogsDTO();
+        dto.setEmail(intermediate.getEmail());
+        dto.setUsernames(intermediate.getUsernames());
+
+        List<UserLogsDTO.LogInfo> logs = intermediate.getLogs().stream().map(log -> {
+            UserLogsDTO.LogInfo logInfo = new UserLogsDTO.LogInfo();
+            logInfo.setId(log.getId().toString());  // Convert ObjectId to String
+            logInfo.setTimestamp(log.getTimestamp());
+            logInfo.setUpvoteCount(log.getUpvoteCount());
+            return logInfo;
+        }).collect(Collectors.toList());
+
+        dto.setLogs(logs);
+        return dto;
     }
 }

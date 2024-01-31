@@ -2,6 +2,7 @@ package gr.uoa.di.cs.nonsqllogsdb.repository;
 
 import gr.uoa.di.cs.nonsqllogsdb.dto.ActiveAdminDTO;
 import gr.uoa.di.cs.nonsqllogsdb.dto.AdminIPsDTO;
+import gr.uoa.di.cs.nonsqllogsdb.dto.IntermediateUserLogsDTO;
 import gr.uoa.di.cs.nonsqllogsdb.dto.UserLogsDTO;
 import gr.uoa.di.cs.nonsqllogsdb.model.Upvote;
 import org.bson.types.ObjectId;
@@ -38,10 +39,7 @@ public interface UpvoteRepository extends MongoRepository<Upvote, String> {
             "{ $unwind: '$user_data' }",
             "{ $group: { _id: '$user_data.email', usernames: { $addToSet: '$user_data.username' }, logIds: { $addToSet: '$logId' } } }",
             "{ $match: { 'usernames.1': { $exists: true } } }",
-            "{ $lookup: { from: 'logs', localField: 'logIds', foreignField: '_id', as: 'logs' } }",
-            "{ $project: { _id: 0, email: '$_id', usernames: 1, logs: { $map: { input: '$logs', as: 'log', in: { id: { $toObjectId: '$$log._id' }, timestamp: '$$log.timestamp', upvoteCount: '$$log.upvoteCount' } } } } }"
+            "{ $lookup: { from: 'logs', localField: 'logIds', foreignField: '_id', as: 'logs' } }"
     })
-    List<UserLogsDTO> findMultiUsernameLogs();
-
-
+    List<IntermediateUserLogsDTO> findMultiUsernameLogs();
 }
