@@ -4,7 +4,7 @@ import UserLogsDisplay from './UserLogsDisplay';
 const logTypeDescriptions = {
   '1': 'access_log',
   '3': 'hdfs_fs_namesystem_log',
-  '2': 'HDFS_DataXceiver'
+  '2': 'hdfs_dataxceiver_log'
 };
 
 const MainContent = ({ data }) => {

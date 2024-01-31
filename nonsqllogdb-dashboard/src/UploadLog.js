@@ -53,7 +53,7 @@ function UploadLog({ setData }) {
             <option value="">Select Log Type</option>
             <option value="access_log">access_log</option>
             <option value="hdfs_fs_namesystem_log">hdfs_fs_namesystem_log</option>
-            <option value="HDFS_DataXceiver">HDFS_DataXceiver</option>
+            <option value="hdfs_dataxceiver_log">hdfs_dataxceiver_log</option>
           </select>
         </div>
         <div>

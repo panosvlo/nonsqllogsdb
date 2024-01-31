@@ -127,4 +127,57 @@ public class LogParsingService {
         }
         return null;
     }
+
+    private static final Pattern HDFS_DATAXCEIVER_LOG_PATTERN = Pattern.compile(
+            "(\\d{6} \\d{6}) (\\d+) INFO dfs\\.DataNode\\$DataXceiver: (\\S+) block blk_(-?\\d+) src: (/\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+) dest: (/\\d+\\.\\d+\\.\\d+\\.\\d+:\\d+)"
+    );
+
+    public void parseAndStoreHdfsDataXceiverLog(MultipartFile file, LogType logType) throws IOException, ParseException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Log logEntry = parseHdfsDataXceiverLogLine(line, logType);
+                if (logEntry != null) {
+                    logRepository.save(logEntry);
+                }
+            }
+        }
+    }
+
+    private Log parseHdfsDataXceiverLogLine(String line, LogType logType) throws ParseException {
+        Matcher matcher = HDFS_DATAXCEIVER_LOG_PATTERN.matcher(line);
+        if (matcher.matches()) {
+            String datetimeStr = matcher.group(1);
+            String action = matcher.group(3);
+            String blockId = matcher.group(4);
+            String src = matcher.group(5);
+            String dest = matcher.group(6);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd HHmmss", Locale.ENGLISH);
+            Date timestamp = dateFormat.parse(datetimeStr);
+
+            List<LogDetail> logDetails = new ArrayList<>();
+            logDetails.add(new LogDetail("action", action));
+            logDetails.add(new LogDetail("block_id", blockId));
+
+            // Correct parsing for source and destination ports
+            String[] srcParts = src.split(":");
+            String[] destParts = dest.split(":");
+            if (srcParts.length > 1) {
+                logDetails.add(new LogDetail("src_port", srcParts[1]));
+            }
+            if (destParts.length > 1) {
+                logDetails.add(new LogDetail("dest_port", destParts[1]));
+            }
+
+            // Assuming sourceIp and destinationIp should be set to the IP without the port
+            String sourceIp = srcParts[0].substring(1); // Remove leading '/'
+            String destIp = destParts[0].substring(1); // Remove leading '/'
+
+            return new Log(logType, timestamp, sourceIp, destIp, logDetails);
+        }
+        return null;
+    }
+
+
 }

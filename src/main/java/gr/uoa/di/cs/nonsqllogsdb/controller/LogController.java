@@ -188,6 +188,9 @@ public class LogController {
                 case "hdfs_fs_namesystem_log":
                     parsingLogService.parseAndStoreHdfsFsNamesystemLog(logFileUploadDTO.getFile(), logType);
                     break;
+                case "hdfs_dataxceiver_log":
+                    parsingLogService.parseAndStoreHdfsDataXceiverLog(logFileUploadDTO.getFile(), logType);
+                    break;
                 default:
                     return ResponseEntity.badRequest().body("Unsupported log type.");
             }
